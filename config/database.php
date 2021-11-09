@@ -2,7 +2,7 @@
 
 class Database {
     private $host = "172.17.0.4";
-    private $database_name = "pong";
+    private $database_name = "lottery";
     private $username = "root";
     private $password = "Raposa@2";
 
