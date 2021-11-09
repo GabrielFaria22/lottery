@@ -8,13 +8,18 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+
     <title>Loteria</title>
   </head>
   <body class="bg-dark text-light">
       <div class="container">
           <div class="jumbotron bg-danger">
+            <div class="d-flex justify-content-center">
               <h1>Loteria</h1>
-              <p>Faça sua aposta</p>
+            </div>
           </div>
 
       

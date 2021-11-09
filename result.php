@@ -9,6 +9,23 @@ use \App\models\Lottery;
 
 $bodyParams = $_POST;
 
+if (empty($bodyParams['name']) || strlen($bodyParams['name']) < 7){
+    die("Please enter a valid name.");
+}
+
+if (empty($bodyParams['date']) || $bodyParams['date'] < date("Y-m-d")){
+    die("Please enter a valid date.");
+}
+
+if (empty($bodyParams['firstNum']) || ($bodyParams['firstNum'] < 1 || $bodyParams['firstNum'] > 5)){
+    die("The initial number must be between 1 and 5.");
+}
+
+if (empty($bodyParams['lastNum']) || ($bodyParams['lastNum'] < 60 || $bodyParams['lastNum'] > 80)){
+    die("The last number must be between 60 and 80.");
+}
+
+
 $database = new Database();
 $db = $database->getConnection();
 
