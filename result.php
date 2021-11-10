@@ -4,6 +4,9 @@ include 'config/database.php';
 
 require __DIR__.'/vendor/autoload.php';
 
+include __DIR__.'/includes/header.php';
+
+use App\models\Card;
 use App\models\Client;
 use \App\models\Lottery;
 
@@ -33,21 +36,21 @@ $intFirstNum = intval($bodyParams['firstNum']);
 $intLastNum = intval($bodyParams['lastNum']);
 
 $count = 0;
-while( ++$count <= 5 ){
+while( ++$count <= 6 ){
     $lotteryArray[$count] = rand($intFirstNum,$intLastNum);
 }
 
+$lotteryArrayToCompare['number_1'] = $lotteryArray[1];
+$lotteryArrayToCompare['number_2'] = $lotteryArray[2];
+$lotteryArrayToCompare['number_3'] = $lotteryArray[3];
+$lotteryArrayToCompare['number_4'] = $lotteryArray[4];
+$lotteryArrayToCompare['number_5'] = $lotteryArray[5];
+$lotteryArrayToCompare['number_6'] = $lotteryArray[6];
+
 $client = new Client($db);
+$clients = $client->getAll();
 
-$first = $client->getFirstClient();
-$second = $client->getSecondClient();
-$third = $client->getThirdClient();
-
-$firstClientHits = array_intersect($first, $lotteryArray);
-$secondClientHits = array_intersect($second, $lotteryArray);
-$thirdClientHits = array_intersect($third, $lotteryArray);
-
-include __DIR__.'/includes/header.php';
+$card = new Card($db);
 
 ?>
 
@@ -58,71 +61,88 @@ include __DIR__.'/includes/header.php';
             <button class="btn btn-success">Novo</button>
         </a>
     </section>
-    <h2 class="mt-3"><?php echo $bodyParams['name']; ?></h2>
+    <h2 class="mt-3"><?= $bodyParams['name']; ?></h2>
     <form method="post">
 
-        <?php if (count($firstClientHits) <= 0){ ?>
+        <div>
+            <p>Números sorteados:</p>
+            <table>
+                <tr>
+                    <?php 
+                        foreach ($lotteryArray as $num){
+                    ?>
+                    <td><?= $num ?></td>
+                    <?php    
+                        }
+                    ?>
+                </tr>
 
-            <div class="form-group">
-                <label><?php echo $first['name'] ?></label>
-                <p><?php echo "não acertou nenhum número"?></p>
-            </div>
+                <?php 
+                sort($lotteryArray);
+                ?> 
 
-        <?php }else{ ?>
-
-            <div class="form-group">
-            <label><?php echo $first['name'] ?></label>
-            <p><?php echo $first['name'] . " acertou " . count($firstClientHits). " números! Os numeros acertados foram: ";?></p>
-            <p><?php 
-                foreach ($firstClientHits as $number) {
-                    echo strval($number) . "-";
-                }
-            ?></p>
+                <tr>
+                    <?php 
+                        foreach ($lotteryArray as $num){
+                    ?>
+                    <td><?= $num ?></td>
+                    <?php    
+                        }
+                    ?>
+                </tr>
+            </table>
         </div>
 
-        <?php }?>
+        <?php
+            $count = 0;
+            foreach($clients as $player){
+        ?>
+                <div class="form-group">
+                    <label><?= $player['name'] ?></label>
+                <?php
+                    $playerCards = $card->getFromClientId($player['id']);
 
-        <?php if (count($secondClientHits) <= 0){ ?>
+                    foreach($playerCards as $myCard){
 
-        <div class="form-group">
-            <label><?php echo $second['name'] ?></label>
-            <p><?php echo "não acertou nenhum número"?></p>
-        </div>
+                        foreach($myCard as $key => $element){
+                            $element = (int)$element;
+                            $myNumbers[$key] = $element;
+                        }
 
-        <?php }else{ ?>
+                        $playerHits = array_intersect($myNumbers, $lotteryArrayToCompare);
+                ?> 
+                        <?php 
+                        if (!empty($playerHits)){
+                        ?> 
+                            <p><?php echo $player['name'] . " acertou " . count($playerHits). " número(s) na tabela " . $myCard['id'] . "! Os numeros acertados foram: ";?></p>
+                            <table style="width:75%">
+                            <tr>
+                                <?php 
+                                    foreach ($playerHits as $hit) {
+                                ?>
+                                        <th><?= $hit ?></th>
 
-        <div class="form-group">
-        <label><?php echo $second['name'] ?></label>
-        <p><?php echo $second['name'] . " acertou " . count($secondClientHits). " números! Os numeros acertados foram: ";?></p>
-        <p><?php 
-            foreach ($secondClientHits as $number) {
-                echo strval($number) . "-";
+                                <?php  
+                                    }
+                                ?>
+                            </tr>
+                        </table>
+                        <?php 
+                        }else{
+                        ?>
+                            <p><?php echo $player['name'] . " não acertou nenhum número na tabela " . $myCard['id'] . "!"?></p>
+                        <?php  
+                        }
+                        ?>
+                    <?php  
+                        }
+                    ?>
+        <?php  
             }
-        ?></p>
-        </div>
+        ?>
 
-        <?php }?>
+                </div>
 
-        <?php if (count($thirdClientHits) <= 0){ ?>
-
-        <div class="form-group">
-            <label><?php echo $third['name'] ?></label>
-            <p><?php echo "não acertou nenhum número"?></p>
-        </div>
-
-        <?php }else{ ?>
-
-        <div class="form-group">
-        <label><?php echo $third['name'] ?></label>
-        <p><?php echo $third['name'] . " acertou " . count($thirdClientHits). " números! Os numeros acertados foram: ";?></p>
-        <p><?php 
-            foreach ($thirdClientHits as $number) {
-                echo strval($number) . "-";
-            }
-        ?></p>
-        </div>
-
-        <?php }?>
 
     </form>
 </main>

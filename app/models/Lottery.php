@@ -20,12 +20,15 @@ class Lottery
         $this->connection = $db;
     }
 
-    public function getLottery()
+    public function getAll()
     {
-        $sqlQuery = "SELECT * FROM " . $this->dbTable . " WHERE id = 1";
+        $sqlQuery = "SELECT * FROM " . $this->dbTable;
         $stmt = $this->connection->prepare($sqlQuery);
         $stmt->execute();
-        return $stmt;
+        if ($stmt->rowCount() > 0){
+            $arrayObj = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $arrayObj;
+        }
     }
 
     public function getFirstLottery()

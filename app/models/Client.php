@@ -20,16 +20,38 @@ class Client
         $this->connection = $db;
     }
 
-    public function getClients()
+    public function getAll()
     {
         $sqlQuery = "SELECT * FROM " . $this->dbTable;
         $stmt = $this->connection->prepare($sqlQuery);
         $stmt->execute();
-        return $stmt;
         if ($stmt->rowCount() > 0){
             $arrayObj = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return $arrayObj;
         }
+    }
+
+    public function getOne($id)
+    {
+        $sqlQuery = "SELECT * FROM " . $this->dbTable . " WHERE id=:id";
+        $stmt = $this->connection->prepare($sqlQuery);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0){
+            $arrayObj = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $arrayObj;
+        }
+    }
+
+    public function create()
+    {
+
+        $sqlQuery = "INSERT INTO " . $this->dbTable . "(name) VALUES(:name)";
+        $stmt = $this->connection->prepare($sqlQuery);
+        $stmt->bindValue('name', $this->name);
+        $stmt->execute();
+        return $this->connection->lastInsertId();
+
     }
 
     public function getFirstClient()
